@@ -1,0 +1,29 @@
+# created by virtualenv automatically
+# Python files
+*.pyc
+__pycache__/
+
+# Virtual environment
+
+envsite/
+venv/
+ENV/
+env/
+# macOS
+.DS_Store
+
+# Secret settings
+ecommerce/settings_secret.py
+
+# SQLite DB (if used)
+*.sqlite3
+
+# VS Code settings (if you're using VS Code)
+.vscode/
+
+# Static files (optional)
+staticfiles/
+
+# Media files (optional)
+media/
+
