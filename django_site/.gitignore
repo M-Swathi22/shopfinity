@@ -13,7 +13,7 @@ env/
 .DS_Store
 
 # Secret settings
-ecommerce/settings_secret.py
+django_site/ecommerce/settings_secret.py
 
 # SQLite DB (if used)
 *.sqlite3
@@ -26,4 +26,6 @@ staticfiles/
 
 # Media files (optional)
 media/
+
+
 
