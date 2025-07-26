@@ -1,5 +1,8 @@
 from django.shortcuts import render
 
+def base(request):
+    return render(request,'base.html')
+
 def home(request):
     return render(request, 'home.html')
 
@@ -21,8 +24,10 @@ def wishlist(request):
     return render(request, 'wishlist.html')
 
 def categories(request):
-    return render(request,'categories.html')
+    return render(request, 'categories.html')
 
 
+def category_products(request, category_name):
+    return render(request, 'category_products.html', {'category': category_name})
 
 # Create your views here.

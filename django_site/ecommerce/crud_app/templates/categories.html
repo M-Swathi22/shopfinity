@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Categories - Shopfinity{% endblock %}
+
+{% block content %}
+<style>
+  .category-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    max-width: 900px;
+    margin: 40px auto;
+  }
+
+  .category-card {
+    width: 250px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+
+  .category-card:hover {
+    transform: scale(1.03);
+  }
+
+  .category-card img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .category-card h5 {
+    margin: 15px 0;
+  }
+</style>
+
+<div class="container text-center">
+  <h2 class="mb-4">All Product Categories</h2>
+  <div class="category-container">
+
+    <!-- Mobile -->
+    <a href="{% url 'category_products' 'mobile' %}" class="text-decoration-none text-dark">
+      <div class="category-card">
+        <img src="{% static 'images/mobimg.webp' %}" alt="Mobile">
+        <h5>Mobile</h5>
+      </div>
+    </a>
+
+    <!-- Electronics -->
+    <a href="{% url 'category_products' 'electronics' %}" class="text-decoration-none text-dark">
+      <div class="category-card">
+        <img src="{% static 'images/elecimg.webp' %}" alt="Electronics">
+        <h5>Electronics</h5>
+      </div>
+    </a>
+
+    <!-- Fashion -->
+    <a href="{% url 'category_products' 'fashion' %}" class="text-decoration-none text-dark">
+      <div class="category-card">
+        <img src="{% static 'images/fasimg.jpg' %}" alt="Fashion">
+        <h5>Fashion</h5>
+      </div>
+    </a>
+
+    <!-- Books -->
+    <a href="{% url 'category_products' 'books' %}" class="text-decoration-none text-dark">
+      <div class="category-card">
+        <img src="{% static 'images/bookimg.jpg' %}" alt="Books">
+        <h5>Books</h5>
+      </div>
+    </a>
+
+    <!-- Home -->
+    <a href="{% url 'category_products' 'home' %}" class="text-decoration-none text-dark">
+      <div class="category-card">
+        <img src="{% static 'images/homimg.jpg' %}" alt="Home">
+        <h5>Home</h5>
+      </div>
+    </a>
+
+    <!-- Grocery -->
+    <a href="{% url 'category_products' 'grocery' %}" class="text-decoration-none text-dark">
+      <div class="category-card">
+        <img src="{% static 'images/groimg.jpg' %}" alt="Grocery">
+        <h5>Grocery</h5>
+      </div>
+    </a>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}{{ category|title }} Products{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h3 class="text-center">Products in {{ category|title }} Category</h3>
+  <!-- Display products for this category here -->
+  <p>This page will show products from the {{ category }} category.</p>
+</div>
+{% endblock %}
