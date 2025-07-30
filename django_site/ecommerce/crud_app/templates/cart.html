@@ -37,14 +37,15 @@
       <tr class="table-success fw-bold">
         <td colspan="3">Grand Total</td>
         <td>₹{{ total }}</td>
-           <div class="text-end mt-3">
-             <a href="{% url 'place_order' %}" class="btn btn-success">Continue to Order</a>
-</div>
-
-
+       
 </tr>
     </tbody>
   </table>
+  <div class="text-end">
+  <a href="{% url 'place_order' %}" class="btn btn-success mt-3">Continue to Order</a>
+</div>
+
+
   {% else %}
   <p class="text-muted text-center">Your cart is empty.</p>
   {% endif %}
