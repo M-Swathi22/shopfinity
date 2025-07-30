@@ -1,52 +1,40 @@
 {% extends 'base.html' %}
-{% block title %}Your Cart{% endblock %}
+{% block title %}Place Order{% endblock %}
 
 {% block content %}
 <div class="container my-5">
-  <h3 class="mb-4 text-center">Your Shopping Cart</h3>
-  {% if cart_items %}
+  <h3 class="mb-4 text-center">Order Summary</h3>
+
   <table class="table table-bordered text-center">
     <thead>
       <tr>
         <th>Product</th>
-        <th>Product Name</th>
         <th>Qty</th>
         <th>Price</th>
         <th>Total</th>
-        <th>Remove</th>
-
       </tr>
     </thead>
     <tbody>
       {% for item in cart_items %}
       <tr>
-        <td>
-  <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="80" height="80"><br>
-</td>
-
         <td>{{ item.product.name }}</td>
         <td>{{ item.quantity }}</td>
         <td>₹{{ item.product.price }}</td>
         <td>₹{{ item.total_price }}</td>
-        <td>
-  <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-danger btn-sm">Remove</a>
-</td>
-
       </tr>
       {% endfor %}
       <tr class="table-success fw-bold">
         <td colspan="3">Grand Total</td>
         <td>₹{{ total }}</td>
-           <div class="text-end mt-3">
-             <a href="{% url 'place_order' %}" class="btn btn-success">Continue to Order</a>
-</div>
-
-
-</tr>
+      </tr>
     </tbody>
   </table>
-  {% else %}
-  <p class="text-muted text-center">Your cart is empty.</p>
-  {% endif %}
+
+  <div class="text-end">
+    <form method="post" action="{% url 'confirm_order' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Place Order</button>
+    </form>
+  </div>
 </div>
 {% endblock %}

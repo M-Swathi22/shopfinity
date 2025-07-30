@@ -10,9 +10,13 @@
   <div class="row g-4">
     {% for product in products %}
     <div class="col-6 col-md-4 col-lg-3">
+      <!-- Clickable Card -->
       <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark">
         <div class="card h-100 shadow-sm">
-          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 230px; object-fit: cover;">
+          <!-- Image wrapper -->
+          <div style="height: 250px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 230px; object-fit: contain;">
+          </div>
           <div class="card-body text-center">
             <h6 class="card-title">{{ product.name }}</h6>
             <p class="card-text text-success fw-bold">₹{{ product.price }}</p>
