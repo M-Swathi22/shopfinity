@@ -1,7 +1,10 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import Product,Category,Cart
+from .models import Product,Category,Cart,Wishlist
 from django.http import Http404
 from .models import Customer
+from django.contrib import messages
+from .models import Order, OrderItem
+
 
 
 def base(request):
@@ -31,9 +34,6 @@ def login_view(request):
         except Customer.DoesNotExist:
             return render(request, 'login.html', {'error': 'Invalid email or password'})
     return render(request, 'login.html')
-
-def wishlist(request):
-    return render(request, 'wishlist.html')
 
 def categories(request):
     return render(request, 'categories.html')
@@ -109,32 +109,6 @@ def cart(request):
     print("Cart items from DB:", cart_items)
     return render(request, 'cart.html', context)
 
-
-def place_order(request):
-    cart = request.session.get('cart', {})
-    if not cart:
-        return redirect('view_cart')
-
-    cart_items = []
-    total = 0
-    for product_id, quantity in cart.items():
-        try:
-            product = Product.objects.get(id=int(product_id))
-            total += product.price * quantity
-            cart_items.append({
-                'product': product,
-                'quantity': quantity,
-                'total_price': product.price * quantity
-            })
-        except Product.DoesNotExist:
-            continue
-
-    context = {
-        'cart_items': cart_items,
-        'total': total,
-    }
-    return render(request, 'place_order.html', context)
-
 def remove_from_cart(request, product_id):
     cart = request.session.get('cart', {})
     product_id_str = str(product_id)
@@ -145,19 +119,99 @@ def remove_from_cart(request, product_id):
 
     return redirect('view_cart')
 
-from django.contrib import messages
+ # Make sure these models exist and are imported
 
 def confirm_order(request):
-    if request.method == 'POST':
-        cart = request.session.get('cart', {})
-        if not cart:
-            messages.error(request, "Your cart is empty.")
-            return redirect('view_cart')
+    if 'customer_id' not in request.session:
+        return redirect('login')
 
-        # You can save order to DB later here
-        request.session['cart'] = {}  # Clear the cart
-        messages.success(request, "Order placed successfully!")
-        return redirect('home')
-    else:
+    customer_id = request.session['customer_id']
+    customer = Customer.objects.get(id=customer_id)
+
+    cart_items = Cart.objects.filter(customer=customer)
+    if not cart_items.exists():
+        messages.error(request, "Your cart is empty.")
         return redirect('view_cart')
+
+    total = 0
+    for item in cart_items:
+        total += item.product.price * item.quantity
+
+    context = {
+        'cart_items': cart_items,
+        'total': total,
+    }
+    return render(request, 'confirm_order.html', context)
+
+
+def place_order(request):
+    if 'customer_id' not in request.session:
+        return redirect('login')
+
+    customer_id = request.session['customer_id']
+    customer = Customer.objects.get(id=customer_id)
+
+    cart_items = Cart.objects.filter(customer=customer)
+    if not cart_items.exists():
+        return redirect('view_cart')
+
+    total = 0
+    for item in cart_items:
+        total += item.product.price * item.quantity
+
+    # Create order
+    order = Order.objects.create(customer=customer, total_amount=total)
+
+    # Add order items
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            item_price=item.product.price
+        )
+
+    # Clear cart
+    cart_items.delete()
+
+    return render(request, 'order_success.html', {'order': order})
+
+def add_to_wishlist(request, product_id):
+    if 'customer_id' not in request.session:
+        messages.error(request, "You must be logged in to add items to wishlist.")
+        return redirect('login')
+
+    customer_id = request.session['customer_id']  # ✅ Fix: get from session
+    product = Product.objects.get(id=product_id)
+
+    wishlist_item, created = Wishlist.objects.get_or_create(customer_id=customer_id, product=product)
+
+    if created:
+        messages.success(request, "Product added to wishlist.")
+    else:
+        messages.info(request, "Product is already in your wishlist.")
+
+    return redirect('product_detail', product_id=product.id)
+
+
+def remove_from_wishlist(request, product_id):
+    if 'customer_id' in request.session:
+        customer = Customer.objects.get(id=request.session['customer_id'])
+        Wishlist.objects.filter(customer=customer, product_id=product_id).delete()
+
+    return redirect('wishlist')
+
+def wishlist(request):
+    if 'customer_id' not in request.session:
+        return redirect('login')
+
+    customer = Customer.objects.get(id=request.session['customer_id'])
+    wishlist_items = Wishlist.objects.filter(customer=customer)
+
+    return render(request, 'wishlist.html', {'wishlist_items': wishlist_items})
+
+
+
+
+
 
