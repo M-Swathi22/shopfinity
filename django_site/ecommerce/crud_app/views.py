@@ -4,6 +4,8 @@ from django.http import Http404
 from .models import Customer
 from django.contrib import messages
 from .models import Order, OrderItem
+from django.db.models import Q
+
 
 
 
@@ -210,7 +212,38 @@ def wishlist(request):
 
     return render(request, 'wishlist.html', {'wishlist_items': wishlist_items})
 
+def move_to_cart(request, product_id):
+    customer_id = request.session.get('customer_id')
+    if not customer_id:
+        return redirect('login')
 
+    # Remove from wishlist
+    Wishlist.objects.filter(customer_id=customer_id, product_id=product_id).delete()
+
+    # Add to cart (if not already)
+    product = get_object_or_404(Product, id=product_id)
+    cart_item, created = Cart.objects.get_or_create(customer_id=customer_id, product=product)
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    messages.success(request, 'Moved to cart.')
+    return redirect('view_cart')  # or redirect('wishlist') if you want to stay there
+
+def search_view(request):
+    query = request.GET.get('query')
+    results = []
+
+    if query:
+        results = Product.objects.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+
+    context = {
+        'query': query,
+        'results': results,
+    }
+    return render(request, 'search_results.html', context)
 
 
 
